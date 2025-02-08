@@ -7,7 +7,7 @@
 //! This implementation uses zero-copy strings when
 //! reasonably possible to improve performance and reduce
 //! memory usage.
-//! 
+//!
 //! Words are separated by whitespace, and consist of a
 //! span of one or more consecutive letters (any Unicode
 //! code point in the "letter" class) with no internal
@@ -39,7 +39,7 @@ fn is_word(word: &str) -> bool {
     !word.is_empty() && word.chars().all(|c| c.is_alphabetic())
 }
 
-fn has_uppercase(word: &str) -> bool {
+fn _has_uppercase(word: &str) -> bool {
     word.chars().any(char::is_uppercase)
 }
 
@@ -68,9 +68,15 @@ impl<'a> Bbow<'a> {
         // TODO: Trim punctuation from beginning or end of valid words
         // Also consider whether this is readable enough, or should be
         // broken up into intermediate steps
-        target.split_whitespace()
-        .filter(|w| is_word(*w))
-        .for_each(|w| *self.0.entry(Cow::Owned(w.to_lowercase().to_string())).or_insert(0) += 1);
+        target
+            .split_whitespace()
+            .filter(|w| is_word(w))
+            .for_each(|w| {
+                *self
+                    .0
+                    .entry(Cow::Owned(w.to_lowercase().to_string()))
+                    .or_insert(0) += 1
+            });
 
         self
     }
@@ -92,11 +98,11 @@ impl<'a> Bbow<'a> {
     pub fn match_count(&self, keyword: &str) -> usize {
         match self.0.get(keyword) {
             Some(&num) => num,
-            None => 0
+            None => 0,
         }
     }
 
-    pub fn words(&'a self) -> impl Iterator<Item=&'a str> {
+    pub fn words(&'a self) -> impl Iterator<Item = &'a str> {
         self.0.keys().map(|w| w.as_ref())
     }
 
