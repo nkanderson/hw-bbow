@@ -65,7 +65,12 @@ impl<'a> Bbow<'a> {
     /// assert_eq!(1, bbow.match_count("hello"));
     /// ```
     pub fn extend_from_text(mut self, target: &'a str) -> Self {
-        todo!();
+        // TODO: Trim punctuation from beginning or end of valid words
+        // Also consider whether this is readable enough, or should be
+        // broken up into intermediate steps
+        target.split_whitespace()
+        .filter(|w| is_word(*w))
+        .for_each(|w| *self.0.entry(Cow::Owned(w.to_lowercase().to_string())).or_insert(0) += 1);
 
         self
     }
@@ -85,7 +90,10 @@ impl<'a> Bbow<'a> {
     /// assert_eq!(3, bbow.match_count("b"));
     /// ```
     pub fn match_count(&self, keyword: &str) -> usize {
-        todo!()
+        match self.0.get(keyword) {
+            Some(&num) => num,
+            None => 0
+        }
     }
 
     pub fn words(&'a self) -> impl Iterator<Item=&'a str> {
@@ -104,7 +112,9 @@ impl<'a> Bbow<'a> {
     /// assert_eq!(3, bbow.count());
     /// ```
     pub fn count(&self) -> usize {
-        todo!()
+        // Iterate over all the entries in the BTreeMap
+        // and sum the entry values
+        self.0.values().sum()
     }
 
     /// Count the number of unique words contained in this BBOW,
@@ -119,11 +129,19 @@ impl<'a> Bbow<'a> {
     /// assert_eq!(2, bbow.len());
     /// ```
     pub fn len(&self) -> usize {
-        todo!()
+        self.0.len()
     }
 
     /// Is this BBOW empty?
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use bbow::Bbow;
+    /// let bbow = Bbow::new().extend_from_text("Hello world.");
+    /// assert_eq!(false, bbow.is_empty());
+    /// ```
     pub fn is_empty(&self) -> bool {
-        todo!()
+        self.0.is_empty()
     }
 }
