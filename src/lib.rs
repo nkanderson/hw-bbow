@@ -43,6 +43,10 @@ fn _has_uppercase(word: &str) -> bool {
     word.chars().any(char::is_uppercase)
 }
 
+fn _trim_punctuation(_word: &mut str) {
+    todo!()
+}
+
 impl<'a> Bbow<'a> {
     /// Make a new empty target words list.
     pub fn new() -> Self {
@@ -70,12 +74,17 @@ impl<'a> Bbow<'a> {
         // broken up into intermediate steps
         target
             .split_whitespace()
+            // punctuation will need to be trimmed here before
+            // filtering using is_word
             .filter(|w| is_word(w))
             .for_each(|w| {
-                *self
-                    .0
-                    .entry(Cow::Owned(w.to_lowercase().to_string()))
-                    .or_insert(0) += 1
+                let key = if w.chars().all(|c| c.is_lowercase()) {
+                    Cow::Borrowed(w)
+                } else {
+                    Cow::Owned(w.to_lowercase())
+                };
+
+                *self.0.entry(key).or_insert(0) += 1;
             });
 
         self
