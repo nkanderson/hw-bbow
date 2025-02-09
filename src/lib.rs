@@ -43,8 +43,9 @@ fn _has_uppercase(word: &str) -> bool {
     word.chars().any(char::is_uppercase)
 }
 
-fn _trim_punctuation(_word: &mut str) {
-    todo!()
+fn trim_punctuation(word: &str) -> &str {
+    // TODO: Handle Unicode punctuation
+    word.trim_matches(|c: char| c.is_ascii_punctuation())
 }
 
 impl<'a> Bbow<'a> {
@@ -69,14 +70,16 @@ impl<'a> Bbow<'a> {
     /// assert_eq!(1, bbow.match_count("hello"));
     /// ```
     pub fn extend_from_text(mut self, target: &'a str) -> Self {
-        // TODO: Trim punctuation from beginning or end of valid words
-        // Also consider whether this is readable enough, or should be
-        // broken up into intermediate steps
         target
             .split_whitespace()
-            // punctuation will need to be trimmed here before
-            // filtering using is_word
+            // trim_punctuation gets new string slices into target
+            // that trim (remove leading or trailing) ascii punctuation
+            .map(trim_punctuation)
+            // filter removes any words that fail the is_word boolean check
             .filter(|w| is_word(w))
+            // For each remaining string slice, if it's already lowercase,
+            // store the borrowed reference. If it contains any uppercase,
+            // we need to create and store a new lowercase version.
             .for_each(|w| {
                 let key = if w.chars().all(|c| c.is_lowercase()) {
                     Cow::Borrowed(w)
