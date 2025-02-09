@@ -77,15 +77,11 @@ impl<'a> Bbow<'a> {
             .map(trim_punctuation)
             // filter removes any words that fail the is_word boolean check
             .filter(|w| is_word(w))
-            // For each remaining string slice, if it's already lowercase,
-            // store the borrowed reference. If it contains any uppercase,
-            // we need to create and store a new lowercase version.
+            // For each remaining string slice, w.to_lowercase() should
+            // return the original, borrowed string slice if it's unchanged,
+            // and an owned String if changed.
             .for_each(|w| {
-                let key = if w.chars().all(|c| c.is_lowercase()) {
-                    Cow::Borrowed(w)
-                } else {
-                    Cow::Owned(w.to_lowercase())
-                };
+                let key = Cow::from(w.to_lowercase());
 
                 *self.0.entry(key).or_insert(0) += 1;
             });
