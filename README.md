@@ -1,6 +1,6 @@
 # HW3: Big Bag of Words (BBOW)
 
-**Author:** Niklas Anderson
+**Author:** Niklas Anderson / forked from Bart Massey
 
 **Description:** A library that can be used to generate a BBOW by processing documents stored as strings in memory. To utilize storage efficiently and reduce expensive string copying, uses the [COW type](https://doc.rust-lang.org/std/borrow/enum.Cow.html) to store a string slice from the original text when possible.
 
