@@ -51,19 +51,19 @@ fn test_is_word() {
     assert_eq!(is_word(""), false);
 }
 
-fn _has_uppercase(word: &str) -> bool {
+fn has_uppercase(word: &str) -> bool {
     word.chars().any(char::is_uppercase)
 }
 
 #[test]
 fn test_has_uppercase() {
-    assert_eq!(_has_uppercase("Bigword"), true);
-    assert_eq!(_has_uppercase("REALLYBIGWORD"), true);
-    assert_eq!(_has_uppercase("withUnicodƹ"), true);
-    assert_eq!(_has_uppercase("word"), false);
-    assert_eq!(_has_uppercase("w"), false);
-    assert_eq!(_has_uppercase("!"), false);
-    assert_eq!(_has_uppercase(""), false);
+    assert_eq!(has_uppercase("Bigword"), true);
+    assert_eq!(has_uppercase("REALLYBIGWORD"), true);
+    assert_eq!(has_uppercase("withUnicodƹ"), true);
+    assert_eq!(has_uppercase("word"), false);
+    assert_eq!(has_uppercase("w"), false);
+    assert_eq!(has_uppercase("!"), false);
+    assert_eq!(has_uppercase(""), false);
 }
 
 fn trim_punctuation(word: &str) -> &str {
@@ -110,11 +110,14 @@ impl<'a> Bbow<'a> {
             .map(trim_punctuation)
             // filter removes any words that fail the is_word boolean check
             .filter(|w| is_word(w))
-            // For each remaining string slice, w.to_lowercase() should
-            // return the original, borrowed string slice if it's unchanged,
-            // and an owned String if changed.
+            // Return a new, owned lowercase string if an uppercase is present,
+            // otherwise return a borrowed version
             .for_each(|w| {
-                let key = Cow::from(w.to_lowercase());
+                let key = if has_uppercase(w) {
+                    Cow::from(w.to_lowercase())
+                } else {
+                    Cow::from(w)
+                };
 
                 *self.0.entry(key).or_insert(0) += 1;
             });
