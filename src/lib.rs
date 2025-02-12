@@ -138,6 +138,11 @@ impl<'a> Bbow<'a> {
     /// let bbow = Bbow::new()
     ///     .extend_from_text("b b b-banana b");
     /// assert_eq!(3, bbow.match_count("b"));
+    /// assert_eq!(0, bbow.match_count("banana"));
+    ///
+    /// let bbow = bbow.extend_from_text("adding banana");
+    /// assert_eq!(3, bbow.match_count("b"));
+    /// assert_eq!(1, bbow.match_count("banana"));
     /// ```
     pub fn match_count(&self, keyword: &str) -> usize {
         match self.0.get(keyword) {
@@ -146,6 +151,18 @@ impl<'a> Bbow<'a> {
         }
     }
 
+    /// Return the unique words from the sampled text(s).
+    ///
+    /// # Examples:
+    ///
+    /// ```
+    /// # use bbow::Bbow;
+    /// let bbow = Bbow::new()
+    ///     .extend_from_text("Hello world.");
+    /// let mut words = bbow.words();
+    /// assert_eq!(Some("hello"), words.next());
+    /// assert_eq!(Some("world"), words.next());
+    /// ```
     pub fn words(&'a self) -> impl Iterator<Item = &'a str> {
         self.0.keys().map(|w| w.as_ref())
     }
