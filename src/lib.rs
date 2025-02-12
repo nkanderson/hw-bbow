@@ -39,13 +39,44 @@ fn is_word(word: &str) -> bool {
     !word.is_empty() && word.chars().all(|c| c.is_alphabetic())
 }
 
+#[test]
+fn test_is_word() {
+    assert_eq!(is_word("word"), true);
+    assert_eq!(is_word("Bigword"), true);
+    assert_eq!(is_word("REALLYBIGWORD"), true);
+    assert_eq!(is_word("withUnicodƹ"), true);
+    assert_eq!(is_word("not-a-word"), false);
+    assert_eq!(is_word("n0taword"), false);
+    assert_eq!(is_word("notaword!"), false);
+    assert_eq!(is_word(""), false);
+}
+
 fn _has_uppercase(word: &str) -> bool {
     word.chars().any(char::is_uppercase)
+}
+
+#[test]
+fn test_has_uppercase() {
+    assert_eq!(_has_uppercase("Bigword"), true);
+    assert_eq!(_has_uppercase("REALLYBIGWORD"), true);
+    assert_eq!(_has_uppercase("withUnicodƹ"), true);
+    assert_eq!(_has_uppercase("word"), false);
+    assert_eq!(_has_uppercase("w"), false);
+    assert_eq!(_has_uppercase("!"), false);
+    assert_eq!(_has_uppercase(""), false);
 }
 
 fn trim_punctuation(word: &str) -> &str {
     // TODO: Handle Unicode punctuation
     word.trim_matches(|c: char| c.is_ascii_punctuation())
+}
+
+#[test]
+fn test_trim_punctuation() {
+    assert_eq!(trim_punctuation("word!"), "word");
+    assert_eq!(trim_punctuation("word?"), "word");
+    assert_eq!(trim_punctuation("!word"), "word");
+    assert_eq!(trim_punctuation("word."), "word");
 }
 
 impl<'a> Bbow<'a> {
@@ -154,6 +185,8 @@ impl<'a> Bbow<'a> {
     /// # use bbow::Bbow;
     /// let bbow = Bbow::new().extend_from_text("Hello world.");
     /// assert_eq!(false, bbow.is_empty());
+    /// let bbow = Bbow::new();
+    /// assert_eq!(true, bbow.is_empty());
     /// ```
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
