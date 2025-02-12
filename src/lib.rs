@@ -35,6 +35,8 @@ use std::collections::BTreeMap;
 #[derive(Debug, Default, Clone)]
 pub struct Bbow<'a>(BTreeMap<Cow<'a, str>, usize>);
 
+/// Returns a bool indicating whether the &str
+/// contains any non-alphabetic characters.
 fn is_word(word: &str) -> bool {
     !word.is_empty() && word.chars().all(|c| c.is_alphabetic())
 }
@@ -51,6 +53,8 @@ fn test_is_word() {
     assert_eq!(is_word(""), false);
 }
 
+/// Returns a bool indicating whether the &str
+/// contains any uppercase characters.
 fn has_uppercase(word: &str) -> bool {
     word.chars().any(char::is_uppercase)
 }
@@ -66,6 +70,8 @@ fn test_has_uppercase() {
     assert_eq!(has_uppercase(""), false);
 }
 
+/// Returns a &str with any leading or trailing characters
+/// that are *not* alphabetic removed.
 fn trim_punctuation(word: &str) -> &str {
     // Trim any characters that are not alphabetic
     word.trim_matches(|c: char| !c.is_alphabetic())
