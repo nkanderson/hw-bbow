@@ -67,16 +67,18 @@ fn test_has_uppercase() {
 }
 
 fn trim_punctuation(word: &str) -> &str {
-    // TODO: Handle Unicode punctuation
-    word.trim_matches(|c: char| c.is_ascii_punctuation())
+    // Trim any characters that are not alphabetic
+    word.trim_matches(|c: char| !c.is_alphabetic())
 }
 
 #[test]
 fn test_trim_punctuation() {
     assert_eq!(trim_punctuation("word!"), "word");
     assert_eq!(trim_punctuation("word?"), "word");
-    assert_eq!(trim_punctuation("!word"), "word");
+    assert_eq!(trim_punctuation(".word"), "word");
     assert_eq!(trim_punctuation("word."), "word");
+    assert_eq!(trim_punctuation("¡word"), "word");
+    assert_eq!(trim_punctuation("unicodƐ"), "unicodƐ");
 }
 
 impl<'a> Bbow<'a> {
